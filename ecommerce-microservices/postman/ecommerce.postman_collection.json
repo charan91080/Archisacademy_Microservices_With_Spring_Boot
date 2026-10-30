@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "Ecommerce Microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Wireless Mouse\",\"description\":\"Bluetooth mouse\",\"price\":19.99,\"stock\":50}"
+        },
+        "url": "http://localhost:8080/api/products"
+      }
+    },
+    {
+      "name": "List products",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/products"
+      }
+    },
+    {
+      "name": "Create user",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"fullName\":\"Asha Kumar\",\"email\":\"asha@example.com\",\"phone\":\"9876543210\"}"
+        },
+        "url": "http://localhost:8080/api/users"
+      }
+    },
+    {
+      "name": "List users",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/users"
+      }
+    },
+    {
+      "name": "Create order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customerId\":1,\"productId\":1,\"quantity\":2}"
+        },
+        "url": "http://localhost:8080/api/orders"
+      }
+    },
+    {
+      "name": "List orders",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/orders"
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+services:
+  product-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: product_db
+      MYSQL_USER: shop
+      MYSQL_PASSWORD: local_only_password
+      MYSQL_ROOT_PASSWORD: local_root_only_password
+    ports: ["3307:3306"]
+    volumes: [product-data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD","healthcheck.sh","--connect","--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+  user-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: shop
+      MYSQL_PASSWORD: local_only_password
+      MYSQL_ROOT_PASSWORD: local_root_only_password
+    ports: ["3308:3306"]
+    volumes: [user-data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD","healthcheck.sh","--connect","--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+  order-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: shop
+      MYSQL_PASSWORD: local_only_password
+      MYSQL_ROOT_PASSWORD: local_root_only_password
+    ports: ["3309:3306"]
+    volumes: [order-data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD","healthcheck.sh","--connect","--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+  product-service:
+    build:
+      context: .
+      dockerfile: product-service/Dockerfile
+    environment:
+      DB_URL: jdbc:mysql://product-db:3306/product_db
+      DB_USERNAME: shop
+      DB_PASSWORD: local_only_password
+    depends_on:
+      product-db: {condition: service_healthy}
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    environment:
+      DB_URL: jdbc:mysql://user-db:3306/user_db
+      DB_USERNAME: shop
+      DB_PASSWORD: local_only_password
+    depends_on:
+      user-db: {condition: service_healthy}
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    environment:
+      DB_URL: jdbc:mysql://order-db:3306/order_db
+      DB_USERNAME: shop
+      DB_PASSWORD: local_only_password
+      PRODUCT_SERVICE_URL: http://product-service:8083
+    depends_on:
+      order-db: {condition: service_healthy}
+      product-service: {condition: service_started}
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports: ["8080:8080"]
+    environment:
+      PRODUCT_SERVICE_URL: http://product-service:8081
+      USER_SERVICE_URL: http://user-service:8082
+      ORDER_SERVICE_URL: http://order-service:8083
+    depends_on: [product-service,user-service,order-service]
+volumes:
+  product-data:
+  user-data:
+  order-data:
